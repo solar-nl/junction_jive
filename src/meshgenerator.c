@@ -103,12 +103,8 @@ void IWRAM_CODE load_model(const int16_t *model_data, int16_t num_triangles, uin
   }
 }
 
-
-// Define the fixed-point data type and scaling factor
-#define FIXED_POINT_BITS 16 // Number of fractional bits
-
-
-void _normalize_vector(vector3_t *vector) {
+void _normalize_vector(vector3_t *vector) 
+{
     int max_component = 0;
     if (abs(vector->x) > max_component) {
         max_component = abs(vector->x);
@@ -122,17 +118,15 @@ void _normalize_vector(vector3_t *vector) {
 
     // Normalize the vector to have a length of 255
     if (max_component != 0) {
-        int alpha = (1 << FIXED_POINT_BITS) / max_component;
+        int alpha = (1 << 16) / max_component;
         vector->x = (vector->x * 255) / alpha;
         vector->y = (vector->y * 255) / alpha;
         vector->z = (vector->z * 255) / alpha;
     }
 }
 
-
-
-// Cross product function
-vector3_t _cross_product(vector3_t v1, vector3_t v2) {
+vector3_t _cross_product(vector3_t v1, vector3_t v2) 
+{
     vector3_t result;
     result.x = (v1.y * v2.z - v1.z * v2.y);
     result.y = (v1.z * v2.x - v1.x * v2.z);
@@ -140,7 +134,6 @@ vector3_t _cross_product(vector3_t v1, vector3_t v2) {
     return result;
 }
 
-// Function to generate normals for each face of the model
 void generate_normals(model_t *model) {
     triangle_t *face = model->triangles;
     while (face != NULL) {
