@@ -103,35 +103,33 @@ void IWRAM_CODE load_model(const int16_t *model_data, int16_t num_triangles, uin
   }
 }
 
-void _normalize_vector(vector3_t *vector) 
-{
-    int max_component = 0;
-    if (abs(vector->x) > max_component) {
-        max_component = abs(vector->x);
-    }
-    if (abs(vector->y) > max_component) {
-        max_component = abs(vector->y);
-    }
-    if (abs(vector->z) > max_component) {
-        max_component = abs(vector->z);
-    }
+void IWRAM_CODE _normalize_vector(vector3_t *vector) {
+  int max_component = 0;
+  if (abs(vector->x) > max_component) {
+    max_component = abs(vector->x);
+  }
+  if (abs(vector->y) > max_component) {
+    max_component = abs(vector->y);
+  }
+  if (abs(vector->z) > max_component) {
+    max_component = abs(vector->z);
+  }
 
-    // Normalize the vector to have a length of 255
-    if (max_component != 0) {
-        int alpha = (1 << 16) / max_component;
-        vector->x = (vector->x * 255) / alpha;
-        vector->y = (vector->y * 255) / alpha;
-        vector->z = (vector->z * 255) / alpha;
-    }
+  if (max_component != 0) {
+    int inv = divide(1 << 16, max_component);
+    vector->x = (vector->x * inv * 255) >> 16;
+    vector->y = (vector->y * inv * 255) >> 16;
+    vector->z = (vector->z * inv * 255) >> 16;
+  }
 }
 
-vector3_t _cross_product(vector3_t v1, vector3_t v2) 
+vector3_t IWRAM_CODE _cross_product(vector3_t v1, vector3_t v2) 
 {
-    vector3_t result;
-    result.x = (v1.y * v2.z - v1.z * v2.y);
-    result.y = (v1.z * v2.x - v1.x * v2.z);
-    result.z = (v1.x * v2.y - v1.y * v2.x);
-    return result;
+  vector3_t result;
+  result.x = (v1.y * v2.z - v1.z * v2.y);
+  result.y = (v1.z * v2.x - v1.x * v2.z);
+  result.z = (v1.x * v2.y - v1.y * v2.x);
+  return result;
 }
 
 void generate_normals(model_t *model) {
